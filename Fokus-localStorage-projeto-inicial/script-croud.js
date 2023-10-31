@@ -1,21 +1,16 @@
-const taskListContainer = document.querySelector('.app__section-task-container')
+const taskListContainer = document.querySelector('.app__section-task-list')
 
 const formTask = document.querySelector('.app__form-add-task')
 const toggleFormTaskBtn = document.querySelector('.app__button--add-task')
-// toggle  é alternar em ingles
 const formLabel = document.querySelector('.app__form-label')
 
-let tarefas = [
-    {
-        descricao:'Tarefa Concluida',
-        concluida:true
+const cancelar = document.querySelector('.app__form-footer__button--cancel')
 
-    },
-    {
-        descricao:'Tarefa pendente',
-        concluida: false
-    }
-]
+const textarea = document.querySelector('.app__form-textarea')
+
+const btnCancelar = document.querySelector('.app__form-footer__button--cancel')
+
+let tarefas = []
 
 const taskIconSvg = `
 <svg class="app__section-task-icon-status" width="24" height="24" viewBox="0 0 24 24"
@@ -27,22 +22,30 @@ const taskIconSvg = `
 </svg>
 `
 
-function createTask (tarefa){
-    const li = document.createElement('li');
-    li.classList.add('app__section-task-list-item');
+const limparFormulario = ()=>{
+    textarea.value=''
+    formTask.classList.add('hidden')
+}
 
-    const svgIcon = document.createElement('svg');
-    svgIcon.innerHTML = taskIconSvg;
-    const paragraph = document.createElement('p');
-    paragraph.classList.add('app__section-task-list-item-description');
+
+function createTask(tarefa) {
+    const li = document.createElement('li')
+    li.classList.add('app__section-task-list-item')
+
+    const svgIcon = document.createElement('svg')
+    svgIcon.innerHTML = taskIconSvg
+
+    const paragraph = document.createElement('p')
+    paragraph.classList.add('app__section-task-list-item-description')
+
+    paragraph.textContent = tarefa.descricao
+
+    li.appendChild(svgIcon)
+    li.appendChild(paragraph)
     
-    paragraph.textContent = tarefa.descricao;
-
-    li.appendChild(svgIcon);
-    li.appendChild(paragraph);
-
     return li
 }
+
 
 tarefas.forEach(task =>{
     const taskItem = createTask(task)
@@ -53,3 +56,27 @@ toggleFormTaskBtn.addEventListener('click', () =>{
     formLabel.textContent = 'Adicionando tarefa'
     formTask.classList.toggle('hidden')
 })
+
+formTask.addEventListener('submit', (evento)=>{
+    evento.preventDefault()
+    const task = {
+        descrição: textarea.value,
+        concluida: false
+    }
+    tarefas.push(task)
+    const taskItem = createTask(task)
+    taskListContainer.appendChild(taskItem)
+
+    limparFormulario()
+    
+})
+
+cancelar.addEventListener('click', ()=>{
+    formTask.classList.add('hidden')
+})
+btnCancelar.addEventListener('click', limparForm)
+
+localStorage.setItem('quantidade', 10)
+
+
+
