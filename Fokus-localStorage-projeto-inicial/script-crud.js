@@ -22,7 +22,7 @@ const taskIconSvg = `
 //criando variavis que vão vir a serem alteradas posteriormente
 let tarefaSelecionada = null
 let itemTarefaSelecionada = null
-let tarfaEmEdicao = null
+let tarefaEmEdicao = null
 let paragraphEmEdicao = null
 
 //Função de seleção de tarefas ja criadas
@@ -46,7 +46,7 @@ const selecionaTarefa = (tarefa, elemento) => {
 
 //Função para o formulario estar limpo sempre que for escrver no mesmo
 const limparFormulario = () => {
-    tarfaEmEdicao = null
+    tarefaEmEdicao = null
     paragraphEmEdicao = null
     textarea.value = ''
     formTask.classList.add('hidden')
@@ -54,13 +54,13 @@ const limparFormulario = () => {
 
 //Função para editar a tarefa selecionada
 const selecionaTarefaParaEditar = (tarefa, elemento) => {
-    if (tarfaEmEdicao == tarefa) {
+    if (tarefaEmEdicao == tarefa) {
         limparFormulario()
         return
     }
 
     formLabel.textContent = 'Editando Tarefa'
-    tarfaEmEdicao = tarefa
+    tarefaEmEdicao = tarefa
     paragraphEmEdicao = elemento
     textarea.value = tarefa.descricao
     formTask.classList.remove('hidden')
@@ -87,7 +87,10 @@ function createTask(tarefa) {
     button.classList.add("app_button-edit") // botao de edição
     button.appendChild(editIcon)
 
-
+    button.addEventListener('click', (event)=>{
+        event.stopPropagation()
+        selecionaTarefaParaEditar(tarefa, paragraph)
+    })
 
     li.onclick = () => {
         selecionaTarefa(tarefa, li)
@@ -116,32 +119,41 @@ tarefa.forEach(task => {
     taskListContainer.appendChild(taskItem)
 })
 
+//botao de abrir e fechar formulario de adição de tarefas
 toggleFormTaskBtn.addEventListener('click', () => {
     formLabel.textContent = 'Adicionando tarefa'
     formTask.classList.toggle('hidden')
 })
 
+//botao de cancelar
 cancelar.addEventListener('click', () => {
     formTask.classList.add('hidden')
 })
 btnCancelar.addEventListener('click', limparFormulario)
 
+// local storage atualizado
 const updateLocalStorage = () => {
     localStorage.setItem('tarefa', JSON.stringify(tarefa))
 }
 
+//função para salvar o formulario
 formTask.addEventListener('submit', (evento) => {
     evento.preventDefault()
-    const task = {
-        descricao: textarea.value,
-        concluida: false
-    }
-    tarefa.push(task)
-    const taskItem = createTask(task)
-    taskListContainer.appendChild(taskItem)
+    if (tarefaEmEdicao) {
+        tarefaEmEdicao.descricao = textarea.value
+        paragraphEmEdicao.textContent = textarea.value
+    } else{
+        const task = {
+            descricao: textarea.value,
+            concluida: false
+        }
+        tarefa.push(task)
+        const taskItem = createTask(task)
+        taskListContainer.appendChild(taskItem)
+        }
     updateLocalStorage()
     limparFormulario()
-
+    
 })
 
 
